@@ -1,3 +1,11 @@
+require "simplecov"
+SimpleCov.start do
+  add_filter %r{^/spec/}
+  add_filter "config/"
+  add_filter "node_modules/"
+  add_filter "tmp"
+end
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"

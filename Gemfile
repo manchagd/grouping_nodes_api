@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "rails", "~> 7.2.2", ">= 7.2.2.1"
 gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
+gem "blueprinter", "~> 1.1", ">= 1.1.2"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
@@ -29,12 +30,11 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
-  gem 'rspec-rails'
-  gem 'factory_bot_rails'
-  gem 'faker'
-  gem 'simplecov', require: false
-  gem 'rubocop', require: false
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "simplecov", require: false
+  gem "rubocop", require: false
 end
 
-gem 'will_paginate', '~> 3.3'
-gem 'active_model_serializers', '~> 0.10.0'
+gem "will_paginate", "~> 3.3"
