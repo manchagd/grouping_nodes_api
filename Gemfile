@@ -30,7 +30,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
-  gem 'dotenv', '~> 3.1', '>= 3.1.7'
+  gem "dotenv", "~> 3.1", ">= 3.1.7"
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
