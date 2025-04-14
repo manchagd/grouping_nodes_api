@@ -4,6 +4,8 @@ SimpleCov.start do
   add_filter "config/"
   add_filter "node_modules/"
   add_filter "tmp"
+
+  minimum_coverage 70
 end
 
 ENV["RAILS_ENV"] ||= "test"
