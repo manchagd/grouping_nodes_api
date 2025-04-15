@@ -38,4 +38,4 @@ group :development, :test do
   gem "rubocop", require: false
 end
 
-gem "will_paginate", "~> 3.3"
+gem "will_paginate", "~> 4.0"
