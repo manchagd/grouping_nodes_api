@@ -12,7 +12,6 @@ AllCops:
     - 'vendor/**/*'
     - 'tmp/**/*'
     - 'config/**/*'
-    - 'spec/**/*'
 
 Layout/LineLength:
   Max: 150
@@ -31,7 +30,7 @@ Metrics/ClassLength:
   Max: 150
 
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Enabled: true
 
 Style/Documentation:
   Enabled: false
