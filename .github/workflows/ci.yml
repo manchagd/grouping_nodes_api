@@ -38,6 +38,7 @@ jobs:
         run: bin/rubocop -f github
 
   test:
+    name: Unit Test - RSpec
     runs-on: ubuntu-latest
 
     services:
