@@ -1,5 +1,5 @@
 class DatetimeController < ApplicationController
   def current
-    render json: { datetime: Time.current.strftime("%d, %m %Y; %H:%M") }
+    render json: { datetime: Time.current.strftime("%d, %b %Y; %H:%M") }
   end
 end
