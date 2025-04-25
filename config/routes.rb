@@ -8,5 +8,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  get '/time_stamp', to: 'time_stamp#current'
+  resource :time_stamp, only: [:show]
 end
