@@ -6,7 +6,7 @@ if [ -f tmp/pids/server.pid ]; then
   rm tmp/pids/server.pid
 fi
 
-until nc -z "$DB_HOST" "$DB_PORT"; do
+until nc -z "$DATABASE_HOST" "$DATABASE_PORT"; do
   sleep 0.5
 done
 
