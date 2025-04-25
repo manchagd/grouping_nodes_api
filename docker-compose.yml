@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file: .env
+
+  backend:
+    build: ./
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    command: ./bin/entrypoint.sh
+    env_file: .env
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+    environment:
+      - RAILS_ENV=development
+
+  frontend:
+    platform: linux/amd64
+    build: ./../grouping_nodes_frontend
+    volumes:
+      - ./../grouping_nodes_frontend:/app
+    ports:
+      - "5173:5173"
+    tty: true
+    stdin_open: true
+    depends_on:
+      - backend
+volumes:
+  postgres_data:
