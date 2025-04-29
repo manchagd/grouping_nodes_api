@@ -18,6 +18,8 @@ WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
 RUN gem install bundler -v 2.4.9
+
+RUN bundle config build.nokogiri --use-system-libraries
 RUN bundle lock --add-platform x86_64-linux
 
 RUN bundle config force_ruby_platform true

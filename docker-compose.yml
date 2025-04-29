@@ -21,10 +21,9 @@ services:
       - RAILS_ENV=development
 
   frontend:
-    platform: linux/amd64
     build: ./../grouping_nodes_frontend
     volumes:
-      - ./../grouping_nodes_frontend:/app
+      - ./../grouping_nodes_frontend:/grouping_nodes_frontend
     ports:
       - "5173:5173"
     tty: true
