@@ -41,4 +41,8 @@ group :development, :test do
   gem "rubocop", require: false
 end
 
+group :test do
+  gem "shoulda-matchers", "~> 6.0"
+end
+
 gem "will_paginate", "~> 3.3"

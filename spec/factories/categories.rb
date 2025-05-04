@@ -1,6 +1,12 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :category do
-    name { "MyString" }
-    parent_id { 1 }
+    sequence(:name) { |n| "Category #{n}" }
+    parent { nil }
+
+    trait :with_parent do
+      association :parent, factory: :category
+    end
   end
 end
