@@ -81,6 +81,8 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/grouping_nodes_api_test
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
+          pwd
+          ls -la
           bundle exec rspec --format documentation
 
       - name: Upload screenshots
