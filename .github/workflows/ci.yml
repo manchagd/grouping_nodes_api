@@ -83,6 +83,12 @@ jobs:
         run: |
           pwd
           ls -la
+          echo "App directory contents:"
+          ls -la app/
+          echo "Models directory contents:"
+          ls -la app/models/
+          echo "Controllers directory contents:"
+          ls -la app/controllers/
           bundle exec rspec --format documentation
 
       - name: Upload screenshots

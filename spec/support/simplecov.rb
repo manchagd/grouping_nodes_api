@@ -6,6 +6,15 @@ SimpleCov.start 'rails' do
   root = File.expand_path('../..', __dir__)
   coverage_dir File.join(root, 'coverage')
 
+  # Explicitly set the root directory
+  root root
+
+  # Add more debugging information
+  puts "SimpleCov root: #{root}"
+  puts "App directory exists?: #{File.directory?(File.join(root, 'app'))}"
+  puts "Models directory exists?: #{File.directory?(File.join(root, 'app', 'models'))}"
+  puts "Controllers directory exists?: #{File.directory?(File.join(root, 'app', 'controllers'))}"
+
   add_filter %r{^/spec/}
   add_filter 'config/'
   add_filter 'node_modules/'
