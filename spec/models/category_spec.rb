@@ -117,7 +117,7 @@ RSpec.describe Category, type: :model do
   let!(:child1) { create(:category, name: 'Child1', parent: parent) }
   let!(:child2) { create(:category, name: 'Child2', parent: parent) }
 
-    it 'reassigns children to the parent category before destruction' do
+    it 'reassigns children to the parent category after destruction' do
       parent.destroy
       [ child1.reload, child2.reload ].each do |child|
         expect(child.parent).to eq(grandparent)

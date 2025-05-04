@@ -40,7 +40,6 @@ class Category < ApplicationRecord
   end
 
   def reassign_children
-    new_parent = self.parent
-    children.each { |child| child.update(parent: new_parent) }
+    children.each { |child| child.update(parent: self.parent) }
   end
 end
