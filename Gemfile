@@ -34,14 +34,14 @@ group :development, :test do
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
   gem "dotenv", "~> 3.1", ">= 3.1.7"
-  gem "rspec-rails"
-  gem "factory_bot_rails"
   gem "faker"
-  gem "simplecov", require: false
   gem "rubocop", require: false
 end
 
 group :test do
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "simplecov", require: false
   gem "shoulda-matchers", "~> 6.0"
 end
 
