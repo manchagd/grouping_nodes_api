@@ -3,7 +3,7 @@
 require 'simplecov'
 
 SimpleCov.start 'rails' do
-  add_filter %r{^/spec/}
+  add_filter 'spec/'
   add_filter 'config/'
   add_filter 'node_modules/'
   add_filter 'tmp'
@@ -17,5 +17,5 @@ SimpleCov.start 'rails' do
   add_group 'Serializers', 'app/serializers'
   add_group 'Services', 'app/services'
 
-  minimum_coverage 0
+  minimum_coverage 95
 end
