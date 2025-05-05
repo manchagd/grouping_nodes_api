@@ -67,14 +67,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client libvips
 
-      - name: Setup test database
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/grouping_nodes_api_test
-        run: |
-          bin/rails db:create
-          bin/rails db:schema:load
-
       - name: Run tests
         env:
           RAILS_ENV: test
