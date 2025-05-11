@@ -6,16 +6,16 @@ class Category < ApplicationRecord
   before_validation :strip_name_whitespace
   before_destroy :reassign_children
 
+  scope :roots, -> { where(parent_id: nil) }
+  scope :with_children, -> { joins(:children).distinct }
+  scope :by_parent_id, ->(parent_id) { where(parent_id: parent_id) }
+
   validates :name, presence: true
 
   def descendants
     children.includes(:children).flat_map do |child|
       [ child ] + child.descendants
     end
-  end
-
-  def ancestors
-    parent ? parent.ancestors + [ parent ] : []
   end
 
   def self.nested_tree(categories = roots)
@@ -28,11 +28,6 @@ class Category < ApplicationRecord
     end
   end
 
-  scope :roots, -> { where(parent_id: nil) }
-  scope :with_children, -> { joins(:children).distinct }
-  scope :leaves, -> { includes(:children).where(children: { id: nil }) }
-  scope :by_parent, ->(parent_id) { where(parent_id: parent_id) }
-
   private
 
   def strip_name_whitespace
@@ -40,6 +35,6 @@ class Category < ApplicationRecord
   end
 
   def reassign_children
-    children.each { |child| child.update(parent: self.parent) }
+    children.update_all(parent_id: self.parent_id)
   end
 end
