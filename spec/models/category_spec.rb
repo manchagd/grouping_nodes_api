@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Category, type: :model do
   describe 'callbacks' do
-    let!(:category) { Category.create(name: '  Trimmed Name  ') }
+    before { Category.create(name: '  Trimmed Name  ') }
 
     it 'strips whitespace from name before validation' do
-      expect(category.name).to eq('Trimmed Name')
+      expect(Category.first.name).to eq('Trimmed Name')
     end
   end
 
@@ -29,7 +29,7 @@ RSpec.describe Category, type: :model do
       end
 
       it 'categories that are returned have null parent_id' do
-        expect(Category.roots.pluck(:parent_id).uniq).to eq([nil])
+        expect(Category.roots.pluck(:parent_id).uniq).to eq([ nil ])
       end
     end
 
@@ -50,17 +50,17 @@ RSpec.describe Category, type: :model do
         create_list(:category, 3, parent: parent2)
       end
 
-      it "return 3 categories when parent_id is parent2.id"do
+      it "return 3 categories when parent_id is parent2.id" do
         expect(Category.by_parent_id(parent2.id).count).to eq(3)
       end
 
-      it "return 2 categories when parent_id is parent1.id"do
+      it "return 2 categories when parent_id is parent1.id" do
         expect(Category.by_parent_id(parent1.id).count).to eq(2)
       end
 
       it 'returns categories with expected parent_id' do
-        expect(Category.by_parent_id(parent1.id).pluck(:parent_id).uniq).to eq([parent1.id])
-        expect(Category.by_parent_id(parent2.id).pluck(:parent_id).uniq).to eq([parent2.id])
+        expect(Category.by_parent_id(parent1.id).pluck(:parent_id).uniq).to eq([ parent1.id ])
+        expect(Category.by_parent_id(parent2.id).pluck(:parent_id).uniq).to eq([ parent2.id ])
       end
     end
   end
@@ -93,7 +93,7 @@ RSpec.describe Category, type: :model do
   describe '.nested_tree' do
     let(:root) { create(:category, name: 'Root') }
     let!(:child) { create(:category, name: 'Child', parent: root) }
-    
+
     it 'returns a nested structure of categories' do
       expect(Category.nested_tree).to eq([
         {
@@ -119,7 +119,7 @@ RSpec.describe Category, type: :model do
     before { category.destroy }
 
     it 'reassigns children to the parent category after destruction' do
-      expect(parent.children.count).to eq(children_count) 
+      expect(parent.children.count).to eq(children_count)
     end
   end
 end
