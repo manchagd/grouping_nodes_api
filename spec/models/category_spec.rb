@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Category, type: :model do
   describe 'callbacks' do
-    before { Category.create(name: '  Trimmed Name  ') }
+    let(:category) { create(:category, name: '  Trimmed Name  ') }
 
     it 'strips whitespace from name before validation' do
-      expect(Category.first.name).to eq('Trimmed Name')
+      expect(category.name).to eq('Trimmed Name')
     end
   end
 
