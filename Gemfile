@@ -36,7 +36,7 @@ group :development, :test do
   gem "dotenv", "~> 3.1", ">= 3.1.7"
   gem "faker"
   gem "rubocop", require: false
-  gem 'annotate'
+  gem "annotate"
 end
 
 group :test do
