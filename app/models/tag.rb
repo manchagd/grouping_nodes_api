@@ -1,24 +1,18 @@
+# == Schema Information
+#
+# Table name: tags
+#
+#  id         :bigint           not null, primary key
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_tags_on_name  (name) UNIQUE
+#
 class Tag < ApplicationRecord
-  has_many :node_tags
-  has_many :nodes, through: :node_tags
+  has_and_belongs_to_many :nodes
 
   validates :name, presence: true, uniqueness: true
-
-  def assigned?
-    nodes.exists?
-  end
-  
-  def assign_to(node)
-    nodes << node unless nodes.include?(node)
-  end
-  
-  def remove_from(node)
-    nodes.destroy(node)
-  end
-
-  scope :unassigned, -> { left_outer_joins(:node_tags).where(node_tags: { id: nil }) }
-  scope :assigned, -> { joins(:node_tags).distinct }
-  scope :search_by_name, ->(query) {
-    where("LOWER(name) LIKE ?", "%#{query.downcase}%")
-  }
 end
