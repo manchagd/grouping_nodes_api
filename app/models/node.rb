@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: nodes
@@ -28,10 +30,39 @@
 #
 #  fk_rails_...  (category_id => categories.id)
 #
+require "uuidtools"
+
 class Node < ApplicationRecord
   belongs_to :category
   has_and_belongs_to_many :tags
 
   has_enumeration_for :status, with: NodeStatusEnum, create_helpers: true
   has_enumeration_for :time_slot, with: TimeSlotEnum, create_helpers: true
+
+  before_validation :generate_plate, :assign_reference_code, :set_time_slot_and_age
+
+  def generate_plate
+    self.plate = "#{seal}#{serie}" if seal.present? && serie.present?
+  end
+
+  def assign_reference_code
+    self.reference_code ||= UUIDTools::UUID.random_create.to_s
+  end
+
+  def set_time_slot_and_age
+    return unless created_at.present?
+    hour = created_at.hour
+
+    case hour
+    when 4...12
+        self.time_slot = TimeSlotEnum::MORNING
+        self.relative_age = hour - 4
+    when 12...20
+        self.time_slot = TimeSlotEnum::AFTERNOON
+        self.relative_age = hour - 12
+    else
+        self.time_slot = TimeSlotEnum::NIGHT
+        self.relative_age = hour < 4 ? hour + 4 : hour - 20
+    end
+  end
 end

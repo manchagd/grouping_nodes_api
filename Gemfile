@@ -7,7 +7,8 @@ gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 gem "blueprinter", "~> 1.1", ">= 1.1.2"
 gem "rack-cors"
-gem 'enumerate_it'
+gem "enumerate_it"
+gem "uuidtools"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 
