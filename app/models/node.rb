@@ -40,7 +40,8 @@ class Node < ApplicationRecord
   has_enumeration_for :time_slot, with: TimeSlotEnum, create_helpers: true
 
   validates :name, :seal, :serie, :plate, :status, :number, :size, :reference_code, :time_slot, :relative_age, presence: true
-  validates :plate, :reference_code, uniqueness: true
+  validates :plate, uniqueness: true
+  validates :reference_code, uniqueness: true
 
   validates :seal,  format: { with: /\A[A-Z]{3}\z/, message: "Only 3 uppercase letters are allowed" }
   validates :serie, format: { with: /\A\d{3}\z/,    message: "Only 3 digits are allowed" }

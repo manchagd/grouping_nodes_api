@@ -2,8 +2,8 @@
 
 class TimeSlotEnum < EnumerateIt::Base
   associate_values(
-    :morning,
-    :afternoon,
-    :night
+    morning: 0,
+    afternoon: 1,
+    night: 2
   )
 end
