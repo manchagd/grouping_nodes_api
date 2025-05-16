@@ -39,6 +39,18 @@ class Node < ApplicationRecord
   has_enumeration_for :status, with: NodeStatusEnum, create_helpers: true
   has_enumeration_for :time_slot, with: TimeSlotEnum, create_helpers: true
 
+  validates :name, :seal, :serie, :plate, :status, :number, :size, :reference_code, :time_slot, :relative_age, presence: true
+  validates :plate, :reference_code, uniqueness: true
+
+  validates :seal,  format: { with: /\A[A-Z]{3}\z/, message: "Only 3 uppercase letters are allowed" }
+  validates :serie, format: { with: /\A\d{3}\z/,    message: "Only 3 digits are allowed" }
+  validates :plate, format: { with: /\A[A-Z]{3}\d{3}\z/, message: "Invalid plate format" }
+
+  validates :status, :time_slot, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 2 }
+  validates :relative_age, numericality: {  only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 7 }
+  validates :number, numericality: { only_integer: true }
+  validates :size, numericality: { greater_than_or_equal_to: 22, less_than_or_equal_to: 36 }
+
   before_validation :generate_plate, :assign_reference_code, :set_time_slot_and_age
 
   def generate_plate
