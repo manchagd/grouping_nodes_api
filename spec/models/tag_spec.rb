@@ -8,6 +8,6 @@ RSpec.describe Tag, type: :model do
   end
 
   describe 'associations' do
-    xit { is_expected.to have_and_belong_to_many(:node) }
+    it { is_expected.to have_and_belong_to_many(:nodes) }
   end
 end
