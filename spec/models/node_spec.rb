@@ -43,16 +43,18 @@ RSpec.describe Node, type: :model do
 
   describe '#generate_plate' do
     context 'when seal and serie are present' do
+      let(:node) { build(:node, seal: 'XYZ', serie: '123') }
+
       it 'generates the correct plate format' do
-        node = build(:node, seal: 'XYZ', serie: '123')
         node.generate_plate
         expect(node.plate).to eq('XYZ123')
       end
     end
 
     context 'when seal or serie is missing' do
+      let(:node) { build(:node, seal: nil, serie: '123') }
+
       it 'does not assign a plate' do
-        node = build(:node, seal: nil, serie: '123')
         node.generate_plate
         expect(node.plate).to be_nil
       end
@@ -61,8 +63,9 @@ RSpec.describe Node, type: :model do
 
   describe '#assign_reference_code' do
     context 'when reference_code is nil' do
+      let(:node) { build(:node, reference_code: nil) }
+
       it 'assigns a new UUID' do
-        node = build(:node, reference_code: nil)
         node.assign_reference_code
         expect(node.reference_code).to be_present
         expect(node.reference_code).to match(/\A[0-9a-f\-]{36}\z/)
@@ -71,8 +74,9 @@ RSpec.describe Node, type: :model do
   end
 
   describe '#set_time_slot_and_age' do
+    let(:node) { build(:node, created_at: Time.zone.local(2025, 5, 16, 10)) }
+
     it 'sets correct time_slot and relative_age based on created_at' do
-      node = build(:node, created_at: Time.zone.local(2025, 5, 16, 10))
       node.set_time_slot_and_age
       expect(node.time_slot).to eq(TimeSlotEnum::MORNING)
       expect(node.relative_age).to eq(6)
