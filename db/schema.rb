@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_15_200741) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_22_230014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -27,12 +27,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_15_200741) do
     t.string "seal", limit: 3, null: false
     t.string "serie", limit: 3, null: false
     t.string "plate", null: false
-    t.integer "status", null: false
+    t.string "status", null: false
     t.integer "number", null: false
     t.float "size", null: false
     t.uuid "reference_code", null: false
     t.text "description"
-    t.integer "time_slot", null: false
+    t.string "time_slot", null: false
     t.integer "relative_age", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false

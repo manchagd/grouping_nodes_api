@@ -74,12 +74,22 @@ RSpec.describe Node, type: :model do
   end
 
   describe '#set_time_slot_and_age' do
-    let(:node) { build(:node, created_at: Time.zone.local(2025, 5, 16, 10)) }
+    let(:node1) { build(:node, created_at: Time.zone.local(2025, 5, 16, 10)) }
+    let(:node2) { build(:node, created_at: Time.zone.local(2025, 5, 16, 17)) }
+    let(:node3) { build(:node, created_at: Time.zone.local(2025, 5, 16, 23)) }
 
     it 'sets correct time_slot and relative_age based on created_at' do
-      node.set_time_slot_and_age
-      expect(node.time_slot).to eq(TimeSlotEnum::MORNING)
-      expect(node.relative_age).to eq(6)
+      node1.set_time_slot_and_age
+      expect(node1.time_slot).to eq(TimeSlotEnum::MORNING)
+      expect(node1.relative_age).to eq(6)
+
+      node2.set_time_slot_and_age
+      expect(node2.time_slot).to eq(TimeSlotEnum::AFTERNOON)
+      expect(node2.relative_age).to eq(5)
+
+      node3.set_time_slot_and_age
+      expect(node3.time_slot).to eq(TimeSlotEnum::NIGHT)
+      expect(node3.relative_age).to eq(3)
     end
   end
 end

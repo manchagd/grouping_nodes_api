@@ -14,8 +14,8 @@
 #  seal           :string(3)        not null
 #  serie          :string(3)        not null
 #  size           :float            not null
-#  status         :integer          not null
-#  time_slot      :integer          not null
+#  status         :string           not null
+#  time_slot      :string           not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  category_id    :bigint           not null
