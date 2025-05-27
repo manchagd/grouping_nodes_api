@@ -8,7 +8,7 @@ RSpec.describe Node, type: :model do
   end
 
   describe 'presence validations' do
-    %i[name seal serie status number size time_slot relative_age].each do |field|
+    %i[name seal serie status number size uuid].each do |field|
       it { is_expected.to validate_presence_of(field) }
     end
   end
@@ -34,9 +34,6 @@ RSpec.describe Node, type: :model do
   end
 
   describe 'numerical validations' do
-    it { is_expected.to validate_numericality_of(:status).only_integer.is_greater_than_or_equal_to(0).is_less_than_or_equal_to(2) }
-    it { is_expected.to validate_numericality_of(:time_slot).only_integer.is_greater_than_or_equal_to(0).is_less_than_or_equal_to(2) }
-    it { is_expected.to validate_numericality_of(:relative_age).only_integer.is_greater_than_or_equal_to(0).is_less_than_or_equal_to(7) }
     it { is_expected.to validate_numericality_of(:number).only_integer }
     it { is_expected.to validate_numericality_of(:size).is_greater_than_or_equal_to(22).is_less_than_or_equal_to(36) }
   end
@@ -61,17 +58,8 @@ RSpec.describe Node, type: :model do
     end
   end
 
-  describe '#assign_reference_code' do
-    context 'when reference_code is nil' do
-      let(:node) { build(:node, reference_code: nil) }
-
-      it 'assigns a new UUID' do
-        node.assign_reference_code
-        expect(node.reference_code).to be_present
-        expect(node.reference_code).to match(/\A[0-9a-f\-]{36}\z/)
-      end
-    end
-  end
+  # describe '#reference_code_version_and_structure' do
+  # end
 
   describe '#set_time_slot_and_age' do
     let(:node1) { build(:node, created_at: Time.zone.local(2025, 5, 16, 10)) }

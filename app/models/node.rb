@@ -30,8 +30,6 @@
 #
 #  fk_rails_...  (category_id => categories.id)
 #
-require "uuidtools"
-
 class Node < ApplicationRecord
   belongs_to :category
   has_and_belongs_to_many :tags
@@ -39,32 +37,29 @@ class Node < ApplicationRecord
   has_enumeration_for :status, with: NodeStatusEnum, create_helpers: true
   has_enumeration_for :time_slot, with: TimeSlotEnum, create_helpers: true
 
-  validates :name, :seal, :serie, :plate, :status, :number, :size, :reference_code, :time_slot, :relative_age, presence: true
-  validates :plate, uniqueness: true
-  validates :reference_code, uniqueness: true
-
+  validates :name, :seal, :serie, :status, :number, :size, :uuid, presence: true
+  validates :plate, :reference_code, uniqueness: true
   validates :seal,  format: { with: /\A[A-Z]{3}\z/, message: "Only 3 uppercase letters are allowed" }
   validates :serie, format: { with: /\A\d{3}\z/,    message: "Only 3 digits are allowed" }
   validates :plate, format: { with: /\A[A-Z]{3}\d{3}\z/, message: "Invalid plate format" }
-
-  validates :status, :time_slot, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 2 }
-  validates :relative_age, numericality: {  only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 7 }
   validates :number, numericality: { only_integer: true }
   validates :size, numericality: { greater_than_or_equal_to: 22, less_than_or_equal_to: 36 }
+  validate :reference_code_version_and_structure
 
-  before_validation :generate_plate, :assign_reference_code, :set_time_slot_and_age
+  before_validation :generate_plate
+  after_create :set_time_slot_and_age
+
+  private
 
   def generate_plate
     self.plate = "#{seal}#{serie}" if seal.present? && serie.present?
   end
 
-  def assign_reference_code
-    self.reference_code ||= UUIDTools::UUID.random_create.to_s
+  def reference_code_version_and_structure
   end
 
   def set_time_slot_and_age
-    return unless created_at.present?
-    hour = created_at.hour
+    hour = self.created_at.hour
 
     case hour
     when 4...12
