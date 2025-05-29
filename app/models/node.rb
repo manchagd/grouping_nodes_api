@@ -56,6 +56,7 @@ class Node < ApplicationRecord
   end
 
   def reference_code_version_and_structure
+    
   end
 
   def set_time_slot_and_age

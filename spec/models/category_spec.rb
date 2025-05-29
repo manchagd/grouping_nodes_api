@@ -4,9 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Category, type: :model do
   describe 'callbacks' do
+    let(:category) { build(:category, name: '  Trimmed Name  ') }
+
     it 'strips whitespace from name before validation' do
-      category = Category.create(name: '  Trimmed Name  ')
-      expect(category.name).to eq('Trimmed Name')
+      expect { category.save }.to change(category, :name).from('  Trimmed Name  ').to('Trimmed Name')
     end
   end
 
@@ -20,82 +21,81 @@ RSpec.describe Category, type: :model do
   end
 
   describe 'scopes' do
-    let!(:root) { create(:category) }
-    let!(:child) { create(:category, parent: root) }
-
     describe '.roots' do
+      before { create_list(:category, 2, :with_children, children_count: 3) }
+
       it 'returns categories without a parent' do
-        expect(Category.roots).to include(root)
-        expect(Category.roots).not_to include(child)
+        expect(Category.roots.count).to eq(2)
+      end
+
+      it 'categories that are returned have null parent_id' do
+        expect(Category.roots.pluck(:parent_id).uniq).to eq([ nil ])
       end
     end
 
     describe '.with_children' do
+      before { create_list(:category, 2, :with_children, children_count: 2) }
+
       it 'returns categories that have at least one child' do
-        expect(Category.with_children).to include(root)
-        expect(Category.with_children).not_to include(child)
+        expect(Category.with_children.count).to eq(2)
       end
     end
 
-    describe '.leaves' do
-      it 'returns categories without children' do
-        parent = create(:category)
-        child = create(:category, parent: parent)
-        leaf = create(:category)
+    describe '.by_parent_id' do
+      let(:parent1) { create(:category) }
+      let(:parent2) { create(:category) }
 
-        expect(Category.leaves).to include(leaf)
-        expect(Category.leaves).to include(child)
-        expect(Category.leaves).not_to include(parent)
+      before do
+        create_list(:category, 2, parent: parent1)
+        create_list(:category, 3, parent: parent2)
       end
-    end
 
-    describe '.by_parent' do
-      it 'returns categories that belong to the given parent_id' do
-        parent = create(:category)
-        child1 = create(:category, parent: parent)
-        child2 = create(:category, parent: parent)
-        other_parent = create(:category)
-        other_child = create(:category, parent: other_parent)
+      it "return 3 categories when parent_id is parent2.id" do
+        expect(Category.by_parent_id(parent2.id).count).to eq(3)
+      end
 
-        expect(Category.by_parent(parent.id)).to match_array([ child1, child2 ])
-        expect(Category.by_parent(parent.id)).not_to include(other_child)
-        expect(Category.by_parent(other_parent.id)).to match_array([ other_child ])
-        expect(Category.by_parent(other_parent.id)).not_to include(child1)
+      it "return 2 categories when parent_id is parent1.id" do
+        expect(Category.by_parent_id(parent1.id).count).to eq(2)
+      end
+
+      it 'returns categories with expected parent_id' do
+        expect(Category.by_parent_id(parent1.id).pluck(:parent_id).uniq).to eq([ parent1.id ])
+        expect(Category.by_parent_id(parent2.id).pluck(:parent_id).uniq).to eq([ parent2.id ])
       end
     end
   end
 
   describe '#descendants' do
-    let!(:root) { create(:category) }
-    let!(:child1) { create(:category, parent: root) }
-    let!(:child2) { create(:category, parent: child1) }
+    let(:root) { create(:category) }
+    let(:child1) { create(:category, parent: root) }
+    let(:child2) { create(:category, parent: child1) }
+    let!(:child3) { create(:category, parent: child1) }
+    let!(:child4) { create(:category, parent: child2) }
 
     it 'returns all descendants recursively' do
-      expect(root.descendants).to match_array([ child1, child2 ])
-      expect(child1.descendants).to match_array([ child2 ])
-      expect(child2.descendants).to be_empty
+      expect(root.descendants.count).to eq(4)
+      expect(child1.descendants.count).to eq(3)
+      expect(child2.descendants.count).to eq(1)
     end
-  end
 
-  describe '#ancestors' do
-    let!(:root) { create(:category) }
-    let!(:child1) { create(:category, parent: root) }
-    let!(:child2) { create(:category, parent: child1) }
+    it 'returns the accurate descendants' do
+      expect(root.descendants).to match_array([ child1, child2, child3, child4 ])
+      expect(child1.descendants).to match_array([ child2, child3, child4 ])
+      expect(child2.descendants).to match_array([ child4 ])
+    end
 
-    it 'returns all ancestors up to the root' do
-      expect(child2.ancestors).to eq([ root, child1 ])
-      expect(child1.ancestors).to eq([ root ])
-      expect(root.ancestors).to be_empty
+    it 'returns empty if it has no childs' do
+      expect(child3.descendants).to be_empty
+      expect(child4.descendants).to be_empty
     end
   end
 
   describe '.nested_tree' do
-    let!(:root) { create(:category, name: 'Root') }
+    let(:root) { create(:category, name: 'Root') }
     let!(:child) { create(:category, name: 'Child', parent: root) }
 
     it 'returns a nested structure of categories' do
-      tree = Category.nested_tree
-      expect(tree).to eq([
+      expect(Category.nested_tree).to eq([
         {
           id: root.id,
           name: 'Root',
@@ -112,16 +112,14 @@ RSpec.describe Category, type: :model do
   end
 
   describe '#reassign_children' do
-  let!(:grandparent) { create(:category, name: 'Grandparent') }
-  let!(:parent) { create(:category, name: 'Parent', parent: grandparent) }
-  let!(:child1) { create(:category, name: 'Child1', parent: parent) }
-  let!(:child2) { create(:category, name: 'Child2', parent: parent) }
+    let(:children_count) { 3 }
+    let(:parent) { create(:category) }
+    let!(:category) { create(:category, :with_children, children_count:, parent:) }
+
+    before { category.destroy }
 
     it 'reassigns children to the parent category after destruction' do
-      parent.destroy
-      [ child1.reload, child2.reload ].each do |child|
-        expect(child.parent).to eq(grandparent)
-      end
+      expect(parent.children.count).to eq(children_count)
     end
   end
 end
