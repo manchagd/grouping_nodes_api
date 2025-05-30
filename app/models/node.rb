@@ -30,14 +30,17 @@
 #
 #  fk_rails_...  (category_id => categories.id)
 #
+
 class Node < ApplicationRecord
+  attr_accessor :code_version, :code_url
+
   belongs_to :category
   has_and_belongs_to_many :tags
 
   has_enumeration_for :status, with: NodeStatusEnum, create_helpers: true
   has_enumeration_for :time_slot, with: TimeSlotEnum, create_helpers: true
 
-  validates :name, :seal, :serie, :status, :number, :size, :uuid, presence: true
+  validates :name, :seal, :serie, :number, :size, presence: true
   validates :plate, :reference_code, uniqueness: true
   validates :seal,  format: { with: /\A[A-Z]{3}\z/, message: "Only 3 uppercase letters are allowed" }
   validates :serie, format: { with: /\A\d{3}\z/,    message: "Only 3 digits are allowed" }
@@ -46,21 +49,43 @@ class Node < ApplicationRecord
   validates :size, numericality: { greater_than_or_equal_to: 22, less_than_or_equal_to: 36 }
   validate :reference_code_version_and_structure
 
-  before_validation :generate_plate
-  after_create :set_time_slot_and_age
+  before_validation :generate_plate, :generate_reference_code, :set_status
+  before_save :set_time_slot_and_age
 
   private
 
   def generate_plate
-    self.plate = "#{seal}#{serie}" if seal.present? && serie.present?
+    self.plate = "#{seal}#{serie}"
+  end
+
+  def set_status
+    self.status = NodeStatusEnum::ACTIVE
+  end
+
+  def generate_reference_code
+    case code_version
+    when 1
+      self.reference_code = UUIDTools::UUID.timestamp_create
+    when 4
+      self.reference_code = UUIDTools::UUID.random_create
+    when 3, 5
+      return nil if code_url.blank?
+
+      self.reference_code = code_version == 3 ?
+        UUIDTools::UUID.md5_create(UUIDTools::UUID_DNS_NAMESPACE, "#{code_url}") :
+        UUIDTools::UUID.sha1_create(UUIDTools::UUID_DNS_NAMESPACE, "#{code_url}")
+    else
+      nil
+    end
   end
 
   def reference_code_version_and_structure
-    
+    errors.add(:code_version, "must be 1, 3, 4, or 5") unless [ 1, 3, 4, 5 ].include?(code_version)
+    errors.add(:code_url, "must be present for UUID versions 3 and 5") if [ 3, 5 ].include?(code_version) && code_url.blank?
   end
 
   def set_time_slot_and_age
-    hour = self.created_at.hour
+    hour = self.created_at.hour || Time.zone.now.hour
 
     case hour
     when 4...12
