@@ -20,6 +20,7 @@ group :development, :test do
   gem "faker"
   gem "rubocop", require: false
   gem "annotate"
+  gem 'pry'
 end
 
 group :test do

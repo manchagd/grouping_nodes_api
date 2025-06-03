@@ -9,6 +9,7 @@ FactoryBot.define do
     sequence(:seal) { |n| "XYZ" }
     sequence(:serie) { |n| "#{(100 + n)}" }
     sequence(:size) { |n| (22 + (n % 15)).to_f }
+    sequence(:status) { |n| "active" }
 
     transient do
       code_version { 4 }

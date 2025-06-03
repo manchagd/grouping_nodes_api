@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_22_230014) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_02_152228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,16 +24,16 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_22_230014) do
 
   create_table "nodes", force: :cascade do |t|
     t.string "name", null: false
-    t.string "seal", limit: 3, null: false
-    t.string "serie", limit: 3, null: false
-    t.string "plate", null: false
-    t.string "status", null: false
-    t.integer "number", null: false
-    t.float "size", null: false
-    t.uuid "reference_code", null: false
+    t.string "seal", limit: 3
+    t.string "serie", limit: 3
+    t.string "plate"
+    t.string "status"
+    t.integer "number"
+    t.float "size"
+    t.uuid "reference_code"
     t.text "description"
-    t.string "time_slot", null: false
-    t.integer "relative_age", null: false
+    t.string "time_slot"
+    t.integer "relative_age"
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

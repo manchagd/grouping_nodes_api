@@ -7,15 +7,15 @@
 #  id             :bigint           not null, primary key
 #  description    :text
 #  name           :string           not null
-#  number         :integer          not null
-#  plate          :string           not null
-#  reference_code :uuid             not null
-#  relative_age   :integer          not null
-#  seal           :string(3)        not null
-#  serie          :string(3)        not null
-#  size           :float            not null
-#  status         :string           not null
-#  time_slot      :string           not null
+#  number         :integer
+#  plate          :string
+#  reference_code :uuid
+#  relative_age   :integer
+#  seal           :string(3)
+#  serie          :string(3)
+#  size           :float
+#  status         :string
+#  time_slot      :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  category_id    :bigint           not null
@@ -40,7 +40,7 @@ class Node < ApplicationRecord
   has_enumeration_for :status, with: NodeStatusEnum, create_helpers: true
   has_enumeration_for :time_slot, with: TimeSlotEnum, create_helpers: true
 
-  validates :name, :seal, :serie, :number, :size, presence: true
+  validates :name, :seal, :serie, :number, :size, :status, presence: true
   validates :plate, :reference_code, uniqueness: true
   validates :seal,  format: { with: /\A[A-Z]{3}\z/, message: "Only 3 uppercase letters are allowed" }
   validates :serie, format: { with: /\A\d{3}\z/,    message: "Only 3 digits are allowed" }
@@ -49,8 +49,9 @@ class Node < ApplicationRecord
   validates :size, numericality: { greater_than_or_equal_to: 22, less_than_or_equal_to: 36 }
   validate :reference_code_version_and_structure
 
-  before_validation :generate_plate, :generate_reference_code, :set_status
-  before_save :set_time_slot_and_age
+  before_validation :generate_plate
+  after_validation :generate_reference_code, if: ->() { errors.empty? } 
+  after_create :set_time_slot_and_age
 
   private
 
@@ -58,45 +59,44 @@ class Node < ApplicationRecord
     self.plate = "#{seal}#{serie}"
   end
 
-  def set_status
-    self.status = NodeStatusEnum::ACTIVE
-  end
-
   def generate_reference_code
-    case code_version
-    when 1
-      self.reference_code = UUIDTools::UUID.timestamp_create
-    when 4
-      self.reference_code = UUIDTools::UUID.random_create
-    when 3, 5
-      return nil if code_url.blank?
-
-      self.reference_code = code_version == 3 ?
-        UUIDTools::UUID.md5_create(UUIDTools::UUID_DNS_NAMESPACE, "#{code_url}") :
-        UUIDTools::UUID.sha1_create(UUIDTools::UUID_DNS_NAMESPACE, "#{code_url}")
-    else
-      nil
-    end
+    self.reference_code =
+      case code_version
+      when 1
+        UUIDTools::UUID.timestamp_create
+      when 3
+        UUIDTools::UUID.md5_create(UUIDTools::UUID_DNS_NAMESPACE, code_url)
+      when 4
+        UUIDTools::UUID.random_create
+      when 5
+        UUIDTools::UUID.sha1_create(UUIDTools::UUID_DNS_NAMESPACE, code_url)
+      else
+        reference_code
+      end
   end
 
   def reference_code_version_and_structure
+    return if code_version.blank?
+
     errors.add(:code_version, "must be 1, 3, 4, or 5") unless [ 1, 3, 4, 5 ].include?(code_version)
     errors.add(:code_url, "must be present for UUID versions 3 and 5") if [ 3, 5 ].include?(code_version) && code_url.blank?
   end
 
   def set_time_slot_and_age
-    hour = self.created_at.hour || Time.zone.now.hour
+    hour = self.created_at.hour
 
     case hour
     when 4...12
-        self.time_slot = TimeSlotEnum::MORNING
-        self.relative_age = hour - 4
+      self.time_slot = TimeSlotEnum::MORNING
+      self.relative_age = hour - 4
     when 12...20
-        self.time_slot = TimeSlotEnum::AFTERNOON
-        self.relative_age = hour - 12
+      self.time_slot = TimeSlotEnum::AFTERNOON
+      self.relative_age = hour - 12
     else
-        self.time_slot = TimeSlotEnum::NIGHT
-        self.relative_age = hour < 4 ? hour + 4 : hour - 20
+      self.time_slot = TimeSlotEnum::NIGHT
+      self.relative_age = hour < 4 ? hour + 4 : hour - 20
     end
+
+    self.save!
   end
 end

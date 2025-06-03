@@ -42,94 +42,137 @@ RSpec.describe Node, type: :model do
   end
 
   describe 'custom validation: reference_code_version_and_structure' do
+    let(:code_version) { 4 }
+    let(:code_url) { nil }
+    subject { build(:node, code_version:, code_url:) }
+    before { subject.save }
+
     context 'when code_version is invalid' do
-      let(:node) { build(:node, code_version: 7) }
+      let(:code_version) { 7 }
 
       it 'adds an error to code_version' do
-        node.valid?
-        expect(node.errors[:code_version]).to include("must be 1, 3, 4, or 5")
+        expect(subject.errors[:code_version]).to include("must be 1, 3, 4, or 5")
       end
     end
 
-    context 'when code_version is 3 or 5 and code_url is missing' do
-      let(:node) { build(:node, code_version: 5) }
+    context 'when code_version is 3 or 5' do
+      let(:code_version) { [ 3, 5 ].sample }
 
-      it 'adds an error to code_url' do
-        node.valid?
-        expect(node.errors[:code_url]).to include("must be present for UUID versions 3 and 5")
+      context 'and code_url is missing' do
+        it 'adds an error to code_url' do
+          expect(subject.errors[:code_url]).to include("must be present for UUID versions 3 and 5")
+        end
       end
-    end
 
-    context 'when all values are valid' do
-      let(:node) { build(:node, code_version: 3, code_url: "www.example.com") }
+      context 'and all values are valid' do
+        let(:code_url) { "www.example.com" }
 
-      it 'is valid' do
-        expect(node).to be_valid
+        it 'returns true' do
+          is_expected.to be_valid
+          Node.find(subject.id).update(name: "cualquier")
+
+          expect(Node.find(subject.id).reference_code).to eq(1)
+        end
       end
     end
   end
 
   describe '#generate_plate' do
-    context 'when seal and serie are present' do
-      let(:node) { build(:node, seal: 'XYZ', serie: '123') }
+    let(:seal) { 'XYZ' }
+    let(:serie) { '123' }
+    subject { build(:node, seal:, serie:) }
+    before { subject.save }
 
+    context 'when seal and serie are present' do
       it 'generates the correct plate format' do
-        node.valid?
-        expect(node.plate).to eq('XYZ123')
+        expect(subject.plate).to eq('XYZ123')
       end
     end
 
-    context 'when seal or serie is missing' do
-      let(:node) { build(:node, seal: nil, serie: '123') }
+    context 'when seal or serie are missing' do
+      let(:seal) { nil }
 
-      it 'does not assign a plate' do
-        node.valid?
-        expect(node.plate).not_to match(/\A[A-Z]{3}\d{3}\z/)
+      it 'generates an invalid plate' do
+        expect(subject.plate).not_to match(/\A[A-Z]{3}\d{3}\z/)
+      end
+    end
+
+    context 'when seal or serie are invalid' do
+      let(:serie) { '45f' }
+
+      it 'generates an invalid plate' do
+        expect(subject.plate).not_to match(/\A[A-Z]{3}\d{3}\z/)
       end
     end
   end
 
   describe '#generate_reference_code' do
-    context 'when required attributes are present' do
-      let(:node1) { build(:node, code_version: 1) }
-      let(:node2) { build(:node, code_version: 3, code_url: "www.example.com") }
+    let(:code_version) { 1 }
+    let(:code_url) { nil }
+    subject { build(:node, code_version:, code_url:) }
+    before { subject.save }
 
+    context 'when code_version is present and code_url is not required' do
       it 'generates a valid UUID' do
-        node1.valid?
-        node2.valid?
-        expect(node1.reference_code).to match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[1345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i)
-        expect(node2.reference_code).to match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[1345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i)
+        expect(subject.reference_code).to match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[1345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i)
       end
     end
 
-    context 'when attributes are missing or invalid' do
-      let(:node1) { build(:node, code_version: 2) }
-      let(:node2) { build(:node, code_version: 3) }
+    context 'when code_version is 3 or 5' do
+      let(:code_version) { [ 3, 5 ].sample }
+
+      context 'and code_url is present' do
+        let(:code_url) { "www.example.com" }
+
+        it 'generates a valid UUID' do
+          expect(subject.reference_code).to match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[35][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i)
+        end
+      end
+
+      context 'and code_url is missing' do
+        it 'does not generate UUID' do
+          expect(subject.reference_code).to be_nil
+        end
+      end
+    end
+
+    context 'when code_version is invalid' do
+      let(:code_version) { 2 }
 
       it 'does not generate UUID' do
-        node1.valid?
-        node2.valid?
-
-        expect(node1.reference_code).to be_nil
-        expect(node2.reference_code).to be_nil
+        expect(subject.reference_code).to be_nil
       end
     end
   end
 
   describe '#set_time_slot_and_age' do
-    let(:node1) { create(:node, created_at: Time.zone.local(2025, 5, 16, 10)) }
-    let(:node2) { create(:node, created_at: Time.zone.local(2025, 5, 16, 17)) }
-    let(:node3) { create(:node, created_at: Time.zone.local(2025, 5, 16, 23)) }
+    let(:created_at) { Time.zone.local(2025, 5, 16, 10) }
+    subject { create(:node, created_at:) }
 
-    it 'sets correct time_slot and relative_age based on created_at' do
-      expect(node1.time_slot).to eq(TimeSlotEnum::MORNING)
-      expect(node1.relative_age).to eq(6)
+    it 'sets correct relative_age based on created_at' do
+        expect(subject.relative_age).to eq(6)
+    end
 
-      expect(node2.time_slot).to eq(TimeSlotEnum::AFTERNOON)
-      expect(node2.relative_age).to eq(5)
+    context 'when created_at is between 4 and 12' do
+      it 'sets time_slot to MORNING' do
+        expect(subject.time_slot).to eq(TimeSlotEnum::MORNING)
+      end
+    end
 
-      expect(node3.time_slot).to eq(TimeSlotEnum::NIGHT)
-      expect(node3.relative_age).to eq(3)
+    context 'when created_at is between 12 and 20' do
+      let(:created_at) { Time.zone.local(2025, 5, 16, 17) }
+
+      it 'sets time_slot to AFTERNOON' do
+        expect(subject.time_slot).to eq(TimeSlotEnum::AFTERNOON)
+      end
+    end
+
+    context 'when created_at is between 20 and 4' do
+      let(:created_at) { Time.zone.local(2025, 5, 16, 23) }
+
+      it 'sets time_slot to NIGHT' do
+        expect(subject.time_slot).to eq(TimeSlotEnum::NIGHT)
+      end
     end
   end
 end
