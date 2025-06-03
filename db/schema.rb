@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_05_003707) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_02_152228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,32 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_05_003707) do
     t.index ["parent_id"], name: "index_categories_on_parent_id"
   end
 
+  create_table "nodes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "seal", limit: 3
+    t.string "serie", limit: 3
+    t.string "plate"
+    t.string "status"
+    t.integer "number"
+    t.float "size"
+    t.uuid "reference_code"
+    t.text "description"
+    t.string "time_slot"
+    t.integer "relative_age"
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_nodes_on_category_id"
+    t.index ["plate"], name: "index_nodes_on_plate", unique: true
+    t.index ["reference_code"], name: "index_nodes_on_reference_code", unique: true
+  end
+
+  create_table "nodes_tags", id: false, force: :cascade do |t|
+    t.bigint "node_id", null: false
+    t.bigint "tag_id", null: false
+    t.index ["node_id", "tag_id"], name: "index_nodes_tags_on_node_id_and_tag_id", unique: true
+  end
+
   create_table "tags", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -30,4 +56,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_05_003707) do
   end
 
   add_foreign_key "categories", "categories", column: "parent_id"
+  add_foreign_key "nodes", "categories"
 end
