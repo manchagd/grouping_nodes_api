@@ -50,7 +50,7 @@ class Node < ApplicationRecord
   validate :reference_code_version_and_structure
 
   before_validation :generate_plate
-  after_validation :generate_reference_code, if: ->() { errors.empty? } 
+  after_validation :generate_reference_code, if: ->() { errors.empty? }
   after_create :set_time_slot_and_age
 
   private
