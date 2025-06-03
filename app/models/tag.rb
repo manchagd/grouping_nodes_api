@@ -18,11 +18,11 @@ class Tag < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
-  def assign_to_nodes(nodes)
-    nodes.each { |node| self.nodes << node unless self.nodes.include?(node) }
-  end
+  # def assign_to_nodes(nodes)
+  #   nodes.each { |node| self.nodes << node unless self.nodes.include?(node) }
+  # end
 
-  def assigned_to_node?(node)
-    self.nodes.exists?(node.id)
-  end
+  # def assigned_to_node?(node)
+  #   self.nodes.exists?(node.id)
+  # end
 end

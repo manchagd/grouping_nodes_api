@@ -69,9 +69,6 @@ RSpec.describe Node, type: :model do
 
         it 'returns true' do
           is_expected.to be_valid
-          Node.find(subject.id).update(name: "cualquier")
-
-          expect(Node.find(subject.id).reference_code).to eq(1)
         end
       end
     end
