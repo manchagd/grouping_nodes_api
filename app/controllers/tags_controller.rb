@@ -29,8 +29,7 @@ class TagsController < ApplicationController
 
   def destroy
     @tag.destroy
-
-    redirect_to tags_path
+    head :no_content
   end
 
   private
