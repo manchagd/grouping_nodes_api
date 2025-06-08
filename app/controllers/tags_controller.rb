@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TagsController < ApplicationController
-  before_action :set_tag, only: %i[show update destroy]
+  before_action :tag, only: %i[show update destroy]
 
   def index
     @tags = Tag.all
@@ -11,7 +11,7 @@ class TagsController < ApplicationController
   def show
     render json: TagBlueprint.render(@tag)
   end
-
+  
   def create
     tag = Tag.new(tag_params)
     if tag.save
@@ -40,7 +40,7 @@ class TagsController < ApplicationController
     params.require(:tag).permit(:name)
   end
 
-  def set_tag
-    @tag = Tag.find(params[:id])
+  def tag
+    @tag ||= Tag.find(params[:id])
   end
 end

@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe "Tags", type: :request do
   describe "GET /tags" do
-    let!(:tags) { create_list(:tag, 10) }
+    before { create_list(:tag, 10) }
 
     it "returns a successful response" do
       get '/tags'
