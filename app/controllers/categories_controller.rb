@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 class CategoriesController < ApplicationController
   def index
     @categories = Category.all
-    render json: CategoryBlueprint.ronder(@categories)
+    render json: CategoryBlueprint.render(@categories)
   end
 
   def show
-    render json: Category.render(category)
+    render json: CategoryBlueprint.render(category)
   end
 
   def create
