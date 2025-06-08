@@ -11,7 +11,7 @@ class TagsController < ApplicationController
   def show
     render json: TagBlueprint.render(@tag)
   end
-  
+
   def create
     tag = Tag.new(tag_params)
     if tag.save
