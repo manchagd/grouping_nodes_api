@@ -7,7 +7,7 @@ class CategoriesController < ApplicationController
   end
 
   def show
-    render json: CategoryBlueprint.render(category)
+    render json: CategoryBlueprint.render(category, view: :extended)
   end
 
   def create
