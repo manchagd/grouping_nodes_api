@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resource :datetime, only: [:show]
+  resources :tags, only: [:index, :show, :create, :update, :destroy]
 end
