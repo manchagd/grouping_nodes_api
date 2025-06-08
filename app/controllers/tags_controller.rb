@@ -1,28 +1,26 @@
 # frozen_string_literal: true
 
 class TagsController < ApplicationController
-  before_action :tag, only: %i[show update destroy]
-
   def index
     @tags = Tag.all
     render json: TagBlueprint.render(@tags)
   end
 
   def show
-    render json: TagBlueprint.render(@tag)
+    render json: TagBlueprint.render(tag)
   end
 
   def create
-    tag = Tag.new(tag_params)
-    if tag.save
-      render json: TagBlueprint.render(tag), status: :created
+    new_tag = Tag.new(tag_params)
+    if new_tag.save
+      render json: TagBlueprint.render(new_tag), status: :created
     else
-      render json: { errors: tag.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: new_tag.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update
-    if @tag.update(tag_params)
+    if tag.update(tag_params)
       render json: TagBlueprint.render(@tag)
     else
       render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
@@ -30,7 +28,7 @@ class TagsController < ApplicationController
   end
 
   def destroy
-    @tag.destroy
+    tag.destroy
     head :no_content
   end
 
