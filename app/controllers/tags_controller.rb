@@ -21,9 +21,9 @@ class TagsController < ApplicationController
 
   def update
     if tag.update(tag_params)
-      render json: TagBlueprint.render(@tag)
+      render json: TagBlueprint.render(tag)
     else
-      render json: { errors: @tag.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: tag.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
