@@ -13,7 +13,7 @@ class CategoriesController < ApplicationController
   def create
     new_category = Category.new(category_params)
     if new_category.save
-      render json: CategoryBlueprint.render(new_category, view: :extended), status: :created
+      render json: CategoryBlueprint.render(new_category), status: :created
     else
       render json: { errors: new_category.errors.full_messages }, status: :unprocessable_entity
     end
