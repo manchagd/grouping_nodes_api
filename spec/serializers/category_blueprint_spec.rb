@@ -11,8 +11,8 @@ RSpec.describe CategoryBlueprint do
 
       it 'only rendes id and name' do
         is_expected.to match({
-          :id => category.id,
-          :name => category.name
+          id: category.id,
+          name: category.name
         })
       end
     end
@@ -22,9 +22,9 @@ RSpec.describe CategoryBlueprint do
 
       it 'rendes id, name and parent' do
         is_expected.to match({
-          :id => category.id,
-          :name => category.name,
-          :parent => category.parent
+          id: category.id,
+          name: category.name,
+          parent: category.parent
         })
       end
     end
@@ -34,9 +34,9 @@ RSpec.describe CategoryBlueprint do
 
       it 'rendes id, name and parent_id' do
         is_expected.to match({
-          :id => category.id,
-          :name => category.name,
-          :parent_id => category.parent_id
+          id: category.id,
+          name: category.name,
+          parent_id: category.parent_id
         })
       end
     end
@@ -50,8 +50,8 @@ RSpec.describe CategoryBlueprint do
 
       it 'only rendes id and name' do
         is_expected.to match({
-          :id => category.id,
-          :name => category.name
+          id: category.id,
+          name: category.name
         })
       end
     end
@@ -61,17 +61,17 @@ RSpec.describe CategoryBlueprint do
 
       it 'rendes id, name and parent' do
         is_expected.to match({
-          :id => category.id,
-          :name => category.name,
-          :parent => { :id => category.parent.id, :name => category.parent.name }
+          id: category.id,
+          name: category.name,
+          parent: { id: category.parent.id, name: category.parent.name }
 
         })
       end
 
       it 'renders parent basic information' do
         expect(subject[:parent]).to match({
-          :id => category.parent.id,
-          :name => category.parent.name
+          id: category.parent.id,
+          name: category.parent.name
         })
       end
     end
@@ -81,9 +81,9 @@ RSpec.describe CategoryBlueprint do
 
       it 'rendes id, name and parent_id' do
         is_expected.to match({
-          :id => category.id,
-          :name => category.name,
-          :parent_id => category.parent_id
+          id: category.id,
+          name: category.name,
+          parent_id: category.parent_id
         })
       end
     end
