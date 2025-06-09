@@ -15,10 +15,6 @@ RSpec.describe CategoryBlueprint do
           'name' => category.name
         })
       end
-
-      it 'does not render parent_id' do
-        is_expected.not_to have_key('parent_id')
-      end
     end
 
     context 'and extended view is requested' do
@@ -31,10 +27,6 @@ RSpec.describe CategoryBlueprint do
           'parent' => category.parent
         })
       end
-
-      it 'does not render a parent_id' do
-        is_expected.not_to have_key('parent_id')
-      end
     end
 
     context 'and no view is specified' do
@@ -46,10 +38,6 @@ RSpec.describe CategoryBlueprint do
           'name' => category.name,
           'parent_id' => category.parent_id
         })
-      end
-
-      it 'does not render a parent' do
-        is_expected.not_to have_key('parent')
       end
     end
   end
@@ -65,10 +53,6 @@ RSpec.describe CategoryBlueprint do
           'id' => category.id,
           'name' => category.name
         })
-      end
-
-      it 'does not render parent_id' do
-        is_expected.not_to have_key('parent_id')
       end
     end
 
@@ -90,10 +74,6 @@ RSpec.describe CategoryBlueprint do
           'name' => category.parent.name
         })
       end
-
-      it 'does not render a parent_id' do
-        is_expected.not_to have_key('parent_id')
-      end
     end
 
     context 'and no view is specified' do
@@ -105,10 +85,6 @@ RSpec.describe CategoryBlueprint do
           'name' => category.name,
           'parent_id' => category.parent_id
         })
-      end
-
-      it 'does not render a parent' do
-        is_expected.not_to have_key('parent')
       end
     end
   end
