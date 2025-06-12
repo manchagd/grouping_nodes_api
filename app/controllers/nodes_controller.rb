@@ -7,7 +7,7 @@ class NodesController < ApplicationController
   end
 
   def show
-    render json: NodeBlueprint.render(node, view: :extended)
+    render json: NodeBlueprint.render(node)
   end
 
   def create
@@ -21,7 +21,7 @@ class NodesController < ApplicationController
 
   def update
     if node.update(node_params)
-      render json: NodeBlueprint.render(node, view: :extended)
+      render json: NodeBlueprint.render(node)
     else
       render json: { errors: node.errors.full_messages }, status: :unprocessable_entity
     end
