@@ -61,7 +61,7 @@ class Node < ApplicationRecord
 
   def generate_reference_code
     self.reference_code =
-      case code_version
+      case code_version.to_i
       when 1
         UUIDTools::UUID.timestamp_create
       when 3
@@ -78,8 +78,8 @@ class Node < ApplicationRecord
   def reference_code_version_and_structure
     return if code_version.blank?
 
-    errors.add(:code_version, "must be 1, 3, 4, or 5") unless [ 1, 3, 4, 5 ].include?(code_version)
-    errors.add(:code_url, "must be present for UUID versions 3 and 5") if [ 3, 5 ].include?(code_version) && code_url.blank?
+    errors.add(:code_version, "must be 1, 3, 4, or 5") unless [ 1, 3, 4, 5 ].include?(code_version.to_i)
+    errors.add(:code_url, "must be present for UUID versions 3 and 5") if [ 3, 5 ].include?(code_version.to_i) && code_url.blank?
   end
 
   def set_time_slot_and_age
