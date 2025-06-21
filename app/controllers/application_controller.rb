@@ -6,6 +6,6 @@ class ApplicationController < ActionController::API
   private
 
   def api_error(messages, status_code)
-    render json: { errors: [messages].flatten }, status: status_code
+    render json: { errors: [ messages ].flatten }, status: status_code
   end
 end
