@@ -8,6 +8,8 @@ class CategoriesController < ApplicationController
 
   def show
     render json: CategoryBlueprint.render(category, view: :extended)
+  rescue ActiveRecord::RecordNotFound => e
+    api_error(e.message, :not_found)
   end
 
   def create
@@ -15,21 +17,27 @@ class CategoriesController < ApplicationController
     if new_category.save
       render json: CategoryBlueprint.render(new_category), status: :created
     else
-      render json: { errors: new_category.errors.full_messages }, status: :unprocessable_entity
+      api_error(new_category.errors.full_messages, :unprocessable_entity)
     end
+  rescue ActionController::ParameterMissing => e
+    api_error(e.message, :bad_request)
   end
 
   def update
     if category.update(category_params)
       render json: CategoryBlueprint.render(category, view: :extended)
     else
-      render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+      api_error(category.errors.full_messages, :unprocessable_entity)
     end
+  rescue ActionController::ParameterMissing => e
+    api_error(e.message, :bad_request)
   end
 
   def destroy
     category.destroy
     head :no_content
+  rescue ActiveRecord::RecordNotFound => e
+    api_error(e.message, :not_found)
   end
 
   private

@@ -8,6 +8,8 @@ class TagsController < ApplicationController
 
   def show
     render json: TagBlueprint.render(tag)
+  rescue ActiveRecord::RecordNotFound => e
+    api_error(e.message, :not_found)
   end
 
   def create
@@ -17,6 +19,8 @@ class TagsController < ApplicationController
     else
       render json: { errors: new_tag.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActionController::ParameterMissing => e
+    api_error(e.message, :bad_request)
   end
 
   def update
@@ -25,11 +29,15 @@ class TagsController < ApplicationController
     else
       render json: { errors: tag.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActionController::ParameterMissing => e
+    api_error(e.message, :bad_request)
   end
 
   def destroy
     tag.destroy
     head :no_content
+  rescue ActiveRecord::RecordNotFound => e
+    api_error(e.message, :not_found)
   end
 
   private
