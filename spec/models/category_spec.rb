@@ -13,6 +13,19 @@ RSpec.describe Category, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to allow_value('ABC').for(:name) }
+    # it { is_expected.not_to allow_value(123).for(:name) }
+  end
+
+  describe 'custom_validation:' do
+    context "when parent_id and id are the same" do
+      let(:category) { build(:category, id: 1, parent_id: 1) }
+      before { category.valid? }
+
+      it 'includes error: parent_id must exists in categories' do
+        expect(category.errors[:parent_id]).to include("parent_id must exists in categories")
+      end
+    end
   end
 
   describe 'associations' do

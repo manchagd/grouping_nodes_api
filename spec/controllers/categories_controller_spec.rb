@@ -42,28 +42,32 @@ RSpec.describe "Categories", type: :request do
 
   describe "POST /categories" do
     context "with valid parameters" do
-      let(:parent) { create(:category, name: "ParentCategory") }
+      let!(:parent) { create(:category, name: "ParentCategory") }
       let(:valid_attributes) { { category: { name: "NewCategory", parent_id: parent.id } } }
 
+      before { post "/categories", params: valid_attributes, as: :json }
+
       it "creates a new category" do
-        post "/categories", params: valid_attributes
         expect(response).to have_http_status(:created)
       end
 
       it "sets the correct name" do
-        post "/categories", params: valid_attributes
         expect(JSON.parse(response.body)["name"]).to eq("NewCategory")
       end
 
       it "sets a valid parent" do
-        post "/categories", params: valid_attributes
         expect(JSON.parse(response.body)["parent_id"]).to eq(parent.id)
       end
     end
 
     context "with invalid parameters" do
-      it "returns unprocessable_entity" do
-        post "/categories", params: { category: { name: "" } }
+      it "returns unprocessable_entity if name is invalid" do
+        post "/categories", params: { category: { name: 123 } }, as: :json
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "returns unprocessable_entity if parent_id is invalid" do
+        post "/categories", params: { category: { name: "ValidName", parent_id: -999 } }, as: :json
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end

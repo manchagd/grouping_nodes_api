@@ -13,26 +13,44 @@ class CategoriesController < ApplicationController
   end
 
   def create
-    new_category = Category.new(category_params)
-    if new_category.save
-      render json: CategoryBlueprint.render(new_category), status: :created
+    contract_result = contract_validation
+
+    if contract_result.success?
+      category = Category.new(contract_result.to_h)
+
+      if category.save
+        render json: CategoryBlueprint.render(category), status: :created
+      else
+        render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+      end
     else
-      api_error(new_category.errors.full_messages, :unprocessable_entity)
+      api_error(contract_errors(contract_result.errors.to_h), :unprocessable_entity)
     end
   rescue ActionController::ParameterMissing => e
     api_error(e.message, :bad_request)
+  rescue ActiveRecord::InvalidForeignKey => e
+    api_error(e.message, :unprocessable_entity)
   end
 
   def update
-    if category.update(category_params)
-      render json: CategoryBlueprint.render(category, view: :extended)
+    contract_result = contract_validation
+
+    if contract_result.success?
+      if category.update(contract_result.to_h)
+        render json: CategoryBlueprint.render(category), status: :ok
+      else
+        render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+      end
     else
-      api_error(category.errors.full_messages, :unprocessable_entity)
+      api_error(contract_errors(contract_result.errors.to_h), :unprocessable_entity)
     end
   rescue ActionController::ParameterMissing => e
     api_error(e.message, :bad_request)
+  rescue ActiveRecord::InvalidForeignKey => e
+    api_error(e.message, :unprocessable_entity)
   end
 
+  
   def destroy
     category.destroy
     head :no_content
@@ -42,8 +60,10 @@ class CategoriesController < ApplicationController
 
   private
 
-  def category_params
-    params.require(:category).permit(:name, :parent_id)
+  def contract_validation
+    contract = CategoryContract.new
+
+    contract.call(params.require(:category).permit!.to_h)
   end
 
   def category
