@@ -21,14 +21,15 @@
 class Category < ApplicationRecord
   belongs_to :parent, class_name: "Category", optional: true
   has_many :children, class_name: "Category", foreign_key: "parent_id"
-  before_validation :strip_name_whitespace
+  before_validation :strip_name_whitespace, :parent_must_exist, :prevent_self_parent
   before_destroy :reassign_children
 
   scope :roots, -> { where(parent_id: nil) }
   scope :with_children, -> { joins(:children).distinct }
   scope :by_parent_id, ->(parent_id) { where(parent_id: parent_id) }
 
-  validates :name, presence: true
+  after_initialize :name_must_be_a_string, :parent_id_must_be_an_integer
+  validates :name, presence: true, uniqueness: true
 
   def descendants
     children.includes(:children).flat_map do |child|
@@ -47,6 +48,30 @@ class Category < ApplicationRecord
   end
 
   private
+
+  def parent_must_exist
+    return if parent_id.nil? || Category.where(id: parent_id).exists?
+
+    errors.add(:parent_id, "must exists in categories")
+  end
+
+  def parent_id_must_be_an_integer
+    return if parent_id.nil? || attributes_before_type_cast["parent_id"].is_a?(Integer)
+
+    errors.add(:parent_id, "must be an integer")
+  end
+
+  def name_must_be_a_string
+    return if attributes_before_type_cast["name"].is_a?(String)
+
+    errors.add(:name, "must be a string")
+  end
+
+  def prevent_self_parent
+    return if id.nil? || parent_id != id
+
+    errors.add(:parent_id, "can't be self-parent")
+  end
 
   def strip_name_whitespace
     self.name = name.strip if name.present?
