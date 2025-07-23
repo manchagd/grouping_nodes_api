@@ -63,13 +63,13 @@ class Category < ApplicationRecord
 
   def name_must_be_a_string
     return if attributes_before_type_cast["name"].is_a?(String)
-    
+
     errors.add(:name, "must be a string")
   end
 
   def prevent_self_parent
     return if id.nil? || parent_id != id
-    
+
     errors.add(:parent_id, "can't be self-parent")
   end
 

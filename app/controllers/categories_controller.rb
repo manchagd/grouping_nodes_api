@@ -50,7 +50,7 @@ class CategoriesController < ApplicationController
     api_error(e.message, :unprocessable_entity)
   end
 
-  
+
   def destroy
     category.destroy
     head :no_content

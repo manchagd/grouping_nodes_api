@@ -23,7 +23,7 @@ RSpec.describe Category, type: :model do
       before { category.valid? }
 
       it 'includes error: parent_id must exists in categories' do
-        expect(category.errors[:parent_id]).to include("parent_id must exists in categories")
+        expect(category.errors[:parent_id]).to include("must exists in categories")
       end
     end
   end

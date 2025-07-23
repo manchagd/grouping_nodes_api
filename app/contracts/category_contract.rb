@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CategoryContract < Dry::Validation::Contract
   json do
     optional(:name).value(:string)

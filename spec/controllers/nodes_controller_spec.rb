@@ -108,22 +108,39 @@ RSpec.describe "Nodes", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "with missing parameters" do
+      it "returns not_found" do
+        patch "/nodes", params: {}
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "DELETE /nodes/:id" do
     let(:node) { create(:node) }
     let!(:id) { node.id }
 
-    it "deletes the node" do
-      expect {
+    context "when id exists in the database" do
+      it "deletes the node" do
+        expect {
+          delete "/nodes/#{id}"
+        }.to change(Node, :count).by(-1)
+      end
+
+      it "returns the http status code" do
         delete "/nodes/#{id}"
-      }.to change(Node, :count).by(-1)
+
+        expect(response).to have_http_status(:no_content)
+      end
     end
 
-    it "returns the http status code" do
-      delete "/nodes/#{id}"
+    context "when id does not exists" do
+      it "returns not found" do
+        delete "/nodes/10000"
 
-      expect(response).to have_http_status(:no_content)
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end
