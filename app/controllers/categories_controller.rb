@@ -63,7 +63,7 @@ class CategoriesController < ApplicationController
   def contract_validation
     contract = CategoryContract.new
 
-    contract.call(params.require(:category).permit!.to_h)
+    contract.call(params.require(:category).permit(:name, :parent_id).to_h)
   end
 
   def category
