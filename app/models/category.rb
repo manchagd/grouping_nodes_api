@@ -24,7 +24,7 @@ class Category < ApplicationRecord
 
   before_validation :parent_must_exist, :prevent_self_parent
   validates :name, presence: true, uniqueness: true
-  after_validation { normalize_name(self.name) }
+  before_validation :normalize_name
   after_initialize :name_must_be_a_string, :parent_id_must_be_an_integer
   before_destroy :reassign_children
 

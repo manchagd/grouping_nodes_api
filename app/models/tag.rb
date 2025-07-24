@@ -17,5 +17,5 @@ class Tag < ApplicationRecord
   has_and_belongs_to_many :nodes
 
   validates :name, presence: true, uniqueness: true
-  after_validation { normalize_name(self.name) }
+  before_validation :normalize_name
 end
