@@ -51,6 +51,7 @@ class Node < ApplicationRecord
 
   before_validation :generate_plate
   after_validation :generate_reference_code, if: ->() { errors.empty? }
+  after_validation { normalize_name(self.name) }
   after_create :set_time_slot_and_age
 
   private
