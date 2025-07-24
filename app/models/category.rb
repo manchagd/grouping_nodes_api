@@ -21,15 +21,16 @@
 class Category < ApplicationRecord
   belongs_to :parent, class_name: "Category", optional: true
   has_many :children, class_name: "Category", foreign_key: "parent_id"
-  before_validation :strip_name_whitespace, :parent_must_exist, :prevent_self_parent
+
+  before_validation :parent_must_exist, :prevent_self_parent
+  validates :name, presence: true, uniqueness: true
+  before_validation :normalize_name
+  after_initialize :name_must_be_a_string, :parent_id_must_be_an_integer
   before_destroy :reassign_children
 
   scope :roots, -> { where(parent_id: nil) }
   scope :with_children, -> { joins(:children).distinct }
   scope :by_parent_id, ->(parent_id) { where(parent_id: parent_id) }
-
-  after_initialize :name_must_be_a_string, :parent_id_must_be_an_integer
-  validates :name, presence: true, uniqueness: true
 
   def descendants
     children.includes(:children).flat_map do |child|
@@ -71,10 +72,6 @@ class Category < ApplicationRecord
     return if id.nil? || parent_id != id
 
     errors.add(:parent_id, "can't be self-parent")
-  end
-
-  def strip_name_whitespace
-    self.name = name.strip if name.present?
   end
 
   def reassign_children

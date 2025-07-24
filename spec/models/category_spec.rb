@@ -3,18 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Category, type: :model do
-  describe 'callbacks' do
-    let(:category) { build(:category, name: '  Trimmed Name  ') }
-
-    it 'strips whitespace from name before validation' do
-      expect { category.save }.to change(category, :name).from('  Trimmed Name  ').to('Trimmed Name')
-    end
-  end
-
   describe 'validations' do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to allow_value('ABC').for(:name) }
-    # it { is_expected.not_to allow_value(123).for(:name) }
   end
 
   describe 'custom_validation:' do

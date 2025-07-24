@@ -43,7 +43,7 @@ RSpec.describe "Tags", type: :request do
 
   describe "POST /tags" do
     context "with valid parameters" do
-      let(:valid_attributes) { { tag: { name: "NewTag" } } }
+      let(:valid_attributes) { { tag: { name: "New Tag" } } }
 
       it "creates a new tag" do
         post "/tags", params: valid_attributes
@@ -52,7 +52,7 @@ RSpec.describe "Tags", type: :request do
 
       it "sets the correct name" do
         post "/tags", params: valid_attributes
-        expect(JSON.parse(response.body)["name"]).to eq("NewTag")
+        expect(JSON.parse(response.body)["name"]).to eq("New Tag")
       end
     end
 
