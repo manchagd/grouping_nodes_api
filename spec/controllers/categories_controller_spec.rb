@@ -42,8 +42,8 @@ RSpec.describe "Categories", type: :request do
 
   describe "POST /categories" do
     context "with valid parameters" do
-      let!(:parent) { create(:category, name: "ParentCategory") }
-      let(:valid_attributes) { { category: { name: "NewCategory", parent_id: parent.id } } }
+      let!(:parent) { create(:category, name: "Parent Category") }
+      let(:valid_attributes) { { category: { name: "New Category", parent_id: parent.id } } }
 
       before { post "/categories", params: valid_attributes, as: :json }
 
@@ -52,7 +52,7 @@ RSpec.describe "Categories", type: :request do
       end
 
       it "sets the correct name" do
-        expect(JSON.parse(response.body)["name"]).to eq("NewCategory")
+        expect(JSON.parse(response.body)["name"]).to eq("New Category")
       end
 
       it "sets a valid parent" do
